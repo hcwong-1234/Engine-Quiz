@@ -1,0 +1,618 @@
+[
+  {
+    "id": "q1",
+    "prompt": "The following statements is/are correct. I. the heating temperature of flywheel ring gear is about 80~90˚C for installation to the flywheel. II. the heating temperature of crank gear is about 165~175˚C for installation to the crankshaft. III. The heating temperature of cams is about 150~180˚C for installation to the cam shaft.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q2",
+    "prompt": "Corrosion and cavitation on liner and liner area of engine block will occur if",
+    "options": [
+      "the cooling water rust preventive is not ef­fective.",
+      "the cooling water pressure is low.",
+      "the cooling water contains air",
+      "All of the above"
+    ],
+    "answer": "All of the above"
+  },
+  {
+    "id": "q3",
+    "prompt": "The setting pressure of the fuel injection valve when replaced with the new nozzle is",
+    "options": [
+      "Normal setting pressure + 0.1 MPa",
+      "Normal setting pressure + 1 MPa",
+      "Normal setting pressure - 0.1 MPa",
+      "Normal setting pressure - 1 MPa"
+    ],
+    "answer": "Normal setting pressure + 1 MPa"
+  },
+  {
+    "id": "q4",
+    "prompt": "The maker’s allowable limit of con-rod serration crack depth is",
+    "options": [
+      "1mm",
+      "2mm",
+      "3mm",
+      "4mm"
+    ],
+    "answer": "2mm"
+  },
+  {
+    "id": "q5",
+    "prompt": "The firing angle of a five-unit engine (e.g. 5DC-17, 5DK-20, etc) is",
+    "options": [
+      "90°",
+      "120°",
+      "144°",
+      "240°"
+    ],
+    "answer": "144°"
+  },
+  {
+    "id": "q6",
+    "prompt": "The replacement interval of plunger assembly and delivery valve assembly is",
+    "options": [
+      "6000 ~8000 running hours",
+      "8000 ~ 12000 running hours",
+      "16000 ~ 24000 running hours",
+      "not specified"
+    ],
+    "answer": "16000 ~ 24000 running hours"
+  },
+  {
+    "id": "q7",
+    "prompt": "The front side of the engine is",
+    "options": [
+      "the output end side (flywheel side)",
+      "the opposite side of the output end.",
+      "the Exhaust manifold side",
+      "The fuel injection pump side."
+    ],
+    "answer": "the opposite side of the output end"
+  },
+  {
+    "id": "q8",
+    "prompt": "The cylinder bore size of DE-18 engine model is",
+    "options": [
+      "175mm",
+      "180mm",
+      "185mm",
+      "190mm"
+    ],
+    "answer": "185mm"
+  },
+  {
+    "id": "q9",
+    "prompt": "The following statements are correct: I: Excessive clearance between the valve stem and valve guide will lead to valve sticking as carbon accumulates between them. II: A defective valve cotter will lead to a valve drop issue. III: If the cylinder head gasket and O’ ring seating areas have any scratches, uneven wear, or dent marks, it will lead to exhaust gas and water leaking between the cylinder head and cylinder liner.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q10",
+    "prompt": "The following statements are correct: I. If the piston ring groove is worn down, blow-by gas will increase, lube oil consumption will be high, and will lead to piston ring breakage. II. If the defric coating of the piston skirt is worn in long-term operation, there will be more friction resistance between the piston and the liner, which will lead to the piston stuck. III. If the ring groove clearance is excessive or the peeling of the ring groove chrome plating on the ring groove, it will lead to gas cutting on piston ring land areas and also onto the liner surface.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q11",
+    "prompt": "HFO380, HFO500, and HFO700 refer to heavy fuel oils with kinematic viscosities of 380cSt, 500cSt, and 700cSt, respectively, at -----°C.",
+    "options": [
+      "30",
+      "50",
+      "100",
+      "130"
+    ],
+    "answer": "50"
+  },
+  {
+    "id": "q12",
+    "prompt": "The abbreviation for the pressure unit Mega Pascal is",
+    "options": [
+      "MPA",
+      "MPa",
+      "Mpa",
+      "mpa"
+    ],
+    "answer": "MPa"
+  },
+  {
+    "id": "q13",
+    "prompt": "The following statements are correct: I. If the rotary valve coupling is worn out, the opening and closing timing of the starting valve will be delayed and making the starting difficult. II. If the rotary valve and rotary valve seat wear excessively, a gap will appear between the rotary valve and valve seat, and as consequence starting air will pass through all units at the same time when starting the engine and will face being unable to rotate the engine. III. If the clearance between the bush and the rotory valve shaft diameter is excessive, lubricating oil will enter the starting air pipeline and making it difficult to start the engine.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q14",
+    "prompt": "The normal engine overspeed setting is about ------- % of the engine-rated speed.",
+    "options": [
+      "110 ~ 112",
+      "112 ~ 115",
+      "115 ~ 118",
+      "118~ 120"
+    ],
+    "answer": "112 ~ 115"
+  },
+  {
+    "id": "q15",
+    "prompt": "The cylinder bore size of DE-23 engine model is",
+    "options": [
+      "225mm",
+      "230mm",
+      "235mm",
+      "240mm"
+    ],
+    "answer": "230mm"
+  },
+  {
+    "id": "q16",
+    "prompt": "The periodical cylinder head inspection and overhauling interval is",
+    "options": [
+      "every 16,000 to 24,000 running hours (every 4~5 years)",
+      "every 8,000 to 12,000 running hours (every 2~3 years)",
+      "every 4,000 to 6,000 running hours (every 1 year)",
+      "every 2,000 to 3,000 running hours (every 6 months)"
+    ],
+    "answer": "every 8,000 to 12,000 running hours (every 2~3 years)"
+  },
+  {
+    "id": "q17",
+    "prompt": "The firing angle of a six-unit engine (e.g. 6DC-17, 6DK-20, etc) is",
+    "options": [
+      "90°",
+      "120°",
+      "144°",
+      "240°"
+    ],
+    "answer": "120°"
+  },
+  {
+    "id": "q18",
+    "prompt": "During the valve overlap period, the intake air will help",
+    "options": [
+      "to push out the exhaust gases between the cylinder head and piston.",
+      "to cool down the combustion area.",
+      "to sweep the carbon deposit.",
+      "all of the above."
+    ],
+    "answer": "all of the above."
+  },
+  {
+    "id": "q19",
+    "prompt": "The cylinder bore size of DE-28 engine model is",
+    "options": [
+      "275mm",
+      "280mm",
+      "285mm",
+      "290mm"
+    ],
+    "answer": "285mm"
+  },
+  {
+    "id": "q20",
+    "prompt": "The cylinder bore size of DE-20 engine model is",
+    "options": [
+      "195mm",
+      "200mm",
+      "205mm",
+      "210mm"
+    ],
+    "answer": "205mm"
+  },
+  {
+    "id": "q21",
+    "prompt": "The principal functions of lubricating oil are",
+    "options": [
+      "to maintain the required temperature of the engine, lubricating oil, and intake air.",
+      "to get higher engine efficiency and to take the designated load.",
+      "to generate the thermal energy of the diesel engine and to maintain better conditions and performance of the fuel injection pump.",
+      "to reduce the friction resistance of moving parts and minimize the wear effect of engine components."
+    ],
+    "answer": "to reduce the friction resistance of moving parts and minimize the wear effect of engine components."
+  },
+  {
+    "id": "q22",
+    "prompt": "To avoid the engine running at high speed during the overspeed trip device test of the rated speed 900 rpm engine, you have to reduce the engine overspeed trip setting from the actual setting of 1020 rpm to ----- rpm.",
+    "options": [
+      "925",
+      "935",
+      "945",
+      "955"
+    ],
+    "answer": "945"
+  },
+  {
+    "id": "q23",
+    "prompt": "The following statements are correct: I. You can use a different brand of anti-friction agent instead of the Molykote 1000 spray. II. The coefficient of friction of the antifriction agent is different with different brands and this coefficient of friction will affect the bolt stress when tightening the bolt. III. If Molykote 1000 Spray is unavailable, you can temporarily use the new lube oil as an anti-friction agent, as it has the same coefficient of friction value as Molykote 1000 Spray",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "II and III"
+  },
+  {
+    "id": "q24",
+    "prompt": "The following statement(s) is/are correct: The fuel injector retaining nut must be tightened to the specified torque and I. if the torque is lower than the specified torque, improper injection may occur. II- if the torque is higher than the specified torque, the needle valve may stick.",
+    "options": [
+      "I",
+      "II",
+      "I and II",
+      "None of the above"
+    ],
+    "answer": "I and II"
+  },
+  {
+    "id": "q25",
+    "prompt": "Low load operation refers to when the engine is being operated at approximately ------% of load or below.",
+    "options": [
+      "0.5",
+      "0.4",
+      "0.3",
+      "0.2"
+    ],
+    "answer": "0.2"
+  },
+  {
+    "id": "q26",
+    "prompt": "The replacement limit of DE-33 piston is",
+    "options": [
+      "- 0.40 mm",
+      "- 0.45 mm",
+      "- 0.50 mm",
+      "not specified"
+    ],
+    "answer": "not specified"
+  },
+  {
+    "id": "q27",
+    "prompt": "If the LO analysis data shows that the following materials are out of the standard limit, you may check the parts as shown below. Which numbers are correct? I. Chrome (Cr) --- Piston ring groove, piston ring II. Aluminium (Al) --- Crankpin bearing, main bearing III. Copper (Cu), Tin (Sn), Zinc (Zn) --- Bush bearing IV. Iron (Fe) --- Bush bearing, gear, needle bearing, piston, liner V. Calcium (Ca), Sodium (Na) --- Water contamination VI. Vanadium (V) --- Fuel oil contamination",
+    "options": [
+      "I, II, III, IV, V",
+      "I, II, III, IV, V, VI",
+      "II, III, IV, V, VI",
+      "I, III, IV, V, VI"
+    ],
+    "answer": "I, II, III, IV, V, VI"
+  },
+  {
+    "id": "q28",
+    "prompt": "To avoid the engine running at high speed during the overspeed trip device test, you must reduce the engine overspeed trip setting to ---------% of the engine-rated speed in the speed switch unit.",
+    "options": [
+      "90",
+      "95",
+      "100",
+      "105"
+    ],
+    "answer": "105"
+  },
+  {
+    "id": "q29",
+    "prompt": "For good ignition and to avoid starting failure, the cetane number (ignition grade) shall be",
+    "options": [
+      "40",
+      "less than 40",
+      "40 and above",
+      "not specified"
+    ],
+    "answer": "40 and above"
+  },
+  {
+    "id": "q30",
+    "prompt": "The periodical inspection interval of the fuel oil injection pump is",
+    "options": [
+      "1000 ~ 1500 running hours",
+      "2000 ~3000 running hours",
+      "4000 ~6000 running hours",
+      "8000 ~12000 running hours"
+    ],
+    "answer": "4000 ~6000 running hours"
+  },
+  {
+    "id": "q31",
+    "prompt": "For the DS, DL models camshaft, the clearance between the FO cam and the FO cam removing nut should be greater than ------ mm.",
+    "options": [
+      "0.5 mm",
+      "1 mm",
+      "1.5 mm",
+      "2 mm"
+    ],
+    "answer": "1 mm"
+  },
+  {
+    "id": "q32",
+    "prompt": "The following statements are correct: I. You can use a different brand of anti-friction agent instead of the Molykote 1000 spray. II. The coefficient of friction of the antifriction agent is different with different brands and this coefficient of friction will affect the bolt stress when tightening the bolt. III. If Molykote 1000 Spray is unavailable, you can temporarily use the new lube oil as an anti-friction agent, as it has the same coefficient of friction value as Molykote 1000 Spray.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "II and III"
+  },
+  {
+    "id": "q33",
+    "prompt": "The major difference specification of DE-23 engine and DEL-23 engine is",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "II and III"
+  },
+  {
+    "id": "q34",
+    "prompt": "The following statements are incorrect: I. You may reuse old crankshaft thrust metals if thrust clearance is within the maker’s allowable limit and also thrust metals are in good condition. II. You may replace the crankshaft thrust bearing every 16,000 to 24,000 running hours (every 4~5 years) even if it is in good condition. III. You must replace the main bearings and thrust bearing at the same time.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "II and III"
+  },
+  {
+    "id": "q35",
+    "prompt": "The normal engine overspeed setting for a rated speed 720 rpm engine is",
+    "options": [
+      "800 rpm",
+      "805 rpm",
+      "810 rpm",
+      "815 rpm"
+    ],
+    "answer": "815 rpm"
+  },
+  {
+    "id": "q36",
+    "prompt": "The torque tightening order of con-rod bolts is",
+    "options": [
+      "1 - 2 - 3 - 4 - 1",
+      "1 - 3 - 2 - 4 - 1",
+      "1 - 4 - 2 - 3 - 1",
+      "1 - 2 - 4 - 3 - 1"
+    ],
+    "answer": "1 - 4 - 2 - 3 - 1"
+  },
+  {
+    "id": "q37",
+    "prompt": "The normal engine overspeed setting for a rated speed 1000 rpm engine is",
+    "options": [
+      "1110 rpm",
+      "1130 rpm",
+      "1150 rpm",
+      "1170 rpm"
+    ],
+    "answer": "1130 rpm"
+  },
+  {
+    "id": "q38",
+    "prompt": "The standard rotational speed of the valve rotator is -------- rotation / min",
+    "options": [
+      "1~2",
+      "2~4",
+      "4~6",
+      "6~8"
+    ],
+    "answer": "2~4"
+  },
+  {
+    "id": "q39",
+    "prompt": "The firing angle of a three-unit engine (e.g. 3DK-20) is",
+    "options": [
+      "90°",
+      "120°",
+      "144°",
+      "240°"
+    ],
+    "answer": "240°"
+  },
+  {
+    "id": "q40",
+    "prompt": "The periodical connecting rod inspection interval is",
+    "options": [
+      "every 16,000 to 24,000 running hours (every 4~5 years)",
+      "every 8,000 to 12,000 running hours (every 2~3 years)",
+      "every 4,000 to 6,000 running hours (every 1 year)",
+      "every 2,000 to 3,000 running hours (every 6 month)"
+    ],
+    "answer": "every 8,000 to 12,000 running hours (every 2~3 years)"
+  },
+  {
+    "id": "q41",
+    "prompt": "The following statements are correct for fuel injection pump timing; I. 1° of crank angle will change 0.3 ~ 0.5 MPa of Pmax at full load operation. II. Advance injection timing will increase Pmax value. III. Delay injection timing will decrease Pmax value.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q42",
+    "prompt": "The following statements are correct: I. The function of the starting air rotary valve is to distribute the pilot air to each of the cylinders according to the firing order. II. The starting air rotary valve can be damaged due to mulfunction of main air starting valve. III. The rotary valve can be damaged by combustion gas flowing backward through the starting air pipe due to insufficient sealing of the starting valve.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q43",
+    "prompt": "The normal engine overspeed setting for a rated speed 900 rpm engine is",
+    "options": [
+      "1000 rpm",
+      "1010 rpm",
+      "1020 rpm",
+      "1030 rpm"
+    ],
+    "answer": "1020 rpm"
+  },
+  {
+    "id": "q44",
+    "prompt": "The following statements are correct; I. If you observe more than 50% of the defric coating on the piston skirt is worn down, it is recommended for reconditioning the piston. II. If you observe the Defric Coating has worn down, it is highly recommended to apply Defric Spray 405 on the piston skirt for permanent use. III. If you find piston ring groove clearance is exceeding or approaching the limit, replace it or recommend carrying out piston reconditioning.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I and III"
+  },
+  {
+    "id": "q45",
+    "prompt": "The maker’s recommends carrying out a retightening check of con-rod bolts (hydraulic tightening) is",
+    "options": [
+      "within 500 running hours after maintenance/initial and then followed by every 2,000-3,000 running hours of continuous operation.",
+      "within 2,000-3,000 running hours after maintenance/initial and then followed by every 4,000-6,000 running hours of continuous operation.",
+      "within 300-500 running hours after maintenance/initial and then followed by every 1,000-1,500 running hours continuous operation.",
+      "not specified"
+    ],
+    "answer": "within 2,000-3,000 running hours after maintenance/initial and then followed by every 4,000-6,000 running hours of continuous operation."
+  },
+  {
+    "id": "q46",
+    "prompt": "The maker’s recommends carrying out a rechecking the valve clearance (tappet clearance) is",
+    "options": [
+      "within 500 running hours after maintenance/initial and then followed by every 2,000-3,000 running hours of continuous operation.",
+      "within 2,000-3,000 running hours after maintenance/initial and then followed by every 4,000-6,000 running hours of continuous operation.",
+      "within 300-500 running hours after maintenance/initial and then followed by every 1,000-1,500 running hours continuous operation.",
+      "not specified"
+    ],
+    "answer": "within 300-500 running hours after maintenance/initial and then followed by every 1,000-1,500 running hours continuous operation."
+  },
+  {
+    "id": "q47",
+    "prompt": "The deviation of the fuel injection pump rack reading among cylinders should be within the range of ----- mm.",
+    "options": [
+      "0.5 mm",
+      "1 mm",
+      "1.5 mm",
+      "2 mm"
+    ],
+    "answer": "1.5 mm"
+  },
+  {
+    "id": "q48",
+    "prompt": "The maker’s recommends carrying out a retightening check of main bearing bolts and side bolts is",
+    "options": [
+      "within 500 running hours after maintenance/initial and then followed by every 2,000-3,000 running hours of continuous operation.",
+      "within 2,000-3,000 running hours after maintenance/initial and then followed by every 4,000-6,000 running hours of continuous operation.",
+      "within 300-500 running hours after maintenance/initial and then followed by every 1,000-1,500 running hours continuous operation.",
+      "not specified"
+    ],
+    "answer": "not specified"
+  },
+  {
+    "id": "q49",
+    "prompt": "The following statements are correct: I. There are two types of pistons in the DK-28e engine model: monoblock type pistons and composite type pistons. II. There are two types of pistons in the DK-28e engine model: 4 piston rings and 5 piston rings. III. There is a difference in top ring thickness of the DK-28e engine model: 7 mm for the 4-ring piston and 6 mm for the 5-ring piston.",
+    "options": [
+      "I and II",
+      "II and III",
+      "I and III",
+      "I, II and III"
+    ],
+    "answer": "I, II and III"
+  },
+  {
+    "id": "q50",
+    "prompt": "To avoid the engine running at high speed during the overspeed trip device test of the rated speed 720 rpm engine, you have to reduce the engine overspeed trip setting from the actual setting of 815 rpm to ----- rpm.",
+    "options": [
+      "700",
+      "720",
+      "756",
+      "800"
+    ],
+    "answer": "756"
+  },
+  {
+    "id": "q51",
+    "prompt": "The maker’s allowable limit of crankpin journal stepped wear limit is",
+    "options": [
+      "0.01mm",
+      "0.1mm",
+      "0.02mm",
+      "0.2mm"
+    ],
+    "answer": "0.02mm"
+  },
+  {
+    "id": "q52",
+    "prompt": "The normal rotation of the engine is",
+    "options": [
+      "clockwise rotation when viewed from the rear side of the engine.",
+      "counterclockwise rotation when viewed from the rear side of the engine.",
+      "clockwise rotation when viewed from the front side of the engine.",
+      "anti-clockwise rotation when viewed from the rear side of the engine."
+    ],
+    "answer": "clockwise rotation when viewed from the rear side of the engine."
+  },
+  {
+    "id": "q53",
+    "prompt": "The replacement interval of connecting rod bolts and crankpin bearings is",
+    "options": [
+      "every 16,000 to 24,000 running hours (every 4~5 years)",
+      "every 8,000 to 12,000 running hours (every 2~3 years)",
+      "every 4,000 to 6,000 running hours (every 1 year)",
+      "every 2,000 to 3,000 running hours (every 6 month)"
+    ],
+    "answer": "every 16,000 to 24,000 running hours (every 4~5 years)"
+  },
+  {
+    "id": "q54",
+    "prompt": "What is the recommended wire size for securing all con-rod bolts on Daihatsu engines?",
+    "options": [
+      "1.2 mm",
+      "1.6 mm",
+      "1.8 mm",
+      "2.0 mm"
+    ],
+    "answer": "1.2 mm"
+  },
+  {
+    "id": "q55",
+    "prompt": "The normal engine overspeed setting for a rated speed 750 rpm engine is",
+    "options": [
+      "850 rpm",
+      "860 rpm",
+      "870 rpm",
+      "880 rpm"
+    ],
+    "answer": "850 rpm"
+  },
+  {
+    "id": "q56",
+    "prompt": "Which statement is correct?",
+    "options": [
+      "The higher the cetane number of diesel oil, the more quickly ignite and lead more complete combustion.",
+      "The higher the cetane number of diesel oil, the more quickly ignite and lead less complete combustion.",
+      "The lower the cetane number of diesel oil, the more quickly ignite and lead more complete combustion.",
+      "The lower the cetane number of diesel oil, the more quickly ignite and lead less complete combustion."
+    ],
+    "answer": "The higher the cetane number of diesel oil, the more quickly ignite and lead more complete combustion."
+  }
+]

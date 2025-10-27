@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure the app can fill the viewport */
+html, body, #root {
+  height: 100%;
+}
+
+/* Smooth theme transition (optional) */
+html {
+  transition: background-color .3s ease, color .3s ease;
+}
