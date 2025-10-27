@@ -9,10 +9,17 @@ const LIMIT_MIN = 30; // 30-minute timer
 export default function Quiz() {
   const { idx } = useParams();
   const nav = useNavigate();
-  const i = Math.max(1, parseInt(idx || "1", 10));
+  const i = Math.max(1, parseInt(idx || "1", 10)); // 1-based index for display/Q-number
 
-  // Selected IDs chosen on Main.jsx
+  // Selected IDs chosen on Main.jsx (this is already your display order)
   const selectedIds = JSON.parse(localStorage.getItem("selected_ids") || "[]");
+
+  // 🔹 Save the exact display order of real IDs for Results (Q1..Qn mapping)
+  useEffect(() => {
+    if (selectedIds.length) {
+      localStorage.setItem("presented_ids", JSON.stringify(selectedIds));
+    }
+  }, [selectedIds]);
 
   // Map IDs to full question objects (memoized)
   const questions = useMemo(
@@ -21,10 +28,14 @@ export default function Quiz() {
   );
   const q = questions[i - 1];
 
-  // Answers (persist to localStorage)
-  const [answers, setAnswers] = useState(
-    () => JSON.parse(localStorage.getItem("answers") || "{}")
+  // 🔹 Answers ORDERED BY POSITION (q1..q25), persisted to localStorage
+  // shape: { q1: "I and II", q2: "All of the above", ... }
+  const [answersOrdered, setAnswersOrdered] = useState(
+    () => JSON.parse(localStorage.getItem("answers_ordered") || "{}")
   );
+  useEffect(() => {
+    localStorage.setItem("answers_ordered", JSON.stringify(answersOrdered));
+  }, [answersOrdered]);
 
   // Timer → auto-submit at 0
   const [left, setLeft] = useState(LIMIT_MIN * 60);
@@ -61,13 +72,16 @@ export default function Quiz() {
     );
   }
 
-  const chosen = answers[q.id];
+  // 🔹 Chosen answer is read by POSITION key (q{index})
+  const chosen = answersOrdered[`q${i}`];
   const m = Math.floor(left / 60), s = String(left % 60).padStart(2, "0");
 
+  // 🔹 Save answer by POSITION (q{index}) — NOT by q.id
   function pick(opt) {
-    const next = { ...answers, [q.id]: opt };
-    setAnswers(next);
-    localStorage.setItem("answers", JSON.stringify(next));
+    const key = `q${i}`; // e.g., q1, q2, ...
+    const next = { ...answersOrdered, [key]: opt };
+    setAnswersOrdered(next);
+    // localStorage updated by the useEffect above
   }
 
   function prev()  { if (i > 1) nav(`/quiz/q/${i - 1}`); }

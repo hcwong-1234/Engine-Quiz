@@ -1,76 +1,95 @@
 // src/pages/Results.jsx
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import all from "../data/questions.json";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function Results() {
-  // Load stored attempt
-  const ids = JSON.parse(localStorage.getItem("selected_ids") || "[]");
-  const answers = JSON.parse(localStorage.getItem("answers") || "{}");
+  // ---------- Load attempt from localStorage ----------
+  // New keys
+  const presentedIdsRaw = localStorage.getItem("presented_ids");
+  const answersOrderedRaw = localStorage.getItem("answers_ordered");
 
-  // Build chosen questions in the SAME order as `ids`
-  const picked = ids.map(id => all.find(q => q.id === id)).filter(Boolean);
+  // Legacy fallback (for older runs)
+  const legacyIdsRaw = localStorage.getItem("selected_ids");
+  const legacyAnswersRaw = localStorage.getItem("answers");
 
-  // Score
-  const correct = picked.reduce((n, q) => {
-    const chosen = (answers[q.id] || "").trim();
-    const right  = (q.answer || "").trim();
-    return n + (chosen === right ? 1 : 0);
-  }, 0);
-  const percent = picked.length ? Math.round((correct / picked.length) * 100) : 0;
+  // Parse with fallback
+  const ids = useMemo(() => {
+    const newIds = JSON.parse(presentedIdsRaw || "[]");
+    if (Array.isArray(newIds) && newIds.length) return newIds;
+    return JSON.parse(legacyIdsRaw || "[]");
+  }, [presentedIdsRaw, legacyIdsRaw]);
 
+  const answersByPos = useMemo(() => {
+    const obj = JSON.parse(answersOrderedRaw || "{}");
+    if (obj && typeof obj === "object" && Object.keys(obj).length) return obj;
+    // build from legacy structure { [qid]: value } -> { q1: ans(ids[0]), q2: ... }
+    const legacy = JSON.parse(legacyAnswersRaw || "{}");
+    const byPos = {};
+    ids.forEach((qid, i) => { byPos[`q${i + 1}`] = (legacy[qid] ?? "").trim(); });
+    return byPos;
+  }, [answersOrderedRaw, legacyAnswersRaw, ids]);
 
-  // --------------------------
-  // Save-to-Supabase bits
-  // --------------------------
+  // ---------- Build question objects in same order ----------
+  const picked = useMemo(
+    () => ids.map(id => all.find(q => q.id === id)).filter(Boolean),
+    [ids]
+  );
+
+  // ---------- Score (by index) ----------
+  const { correct, percent } = useMemo(() => {
+    let c = 0;
+    for (let i = 0; i < picked.length; i++) {
+      const q = picked[i];
+      const chosen = String(answersByPos[`q${i + 1}`] ?? "").trim();
+      const right  = String(q?.answer ?? "").trim();
+      if (chosen === right) c++;
+    }
+    const pct = picked.length ? Math.round((c / picked.length) * 100) : 0;
+    return { correct: c, percent: pct };
+  }, [picked, answersByPos]);
+
+  // ---------- Save to Supabase ----------
   const { user } = useAuth();
   const [saveStatus, setSaveStatus] = useState("idle"); // 'idle' | 'saving' | 'saved' | 'error'
   const savedRef = useRef(false);
 
   useEffect(() => {
-    if (!user || picked.length === 0 || savedRef.current) return;
+    if (!user?.id || picked.length === 0 || savedRef.current) return;
 
     savedRef.current = true;
     setSaveStatus("saving");
 
     const quizName = "User's knowledge";
 
-    const answersOrdered = {};
-ids.forEach((id, i) => {
-  answersOrdered[`Q${i + 1}`] = (answers[id] ?? "").trim();
-});
-
     const payload = {
       user_id: user.id,
-      user_email: user.email ?? null,
+      user_email: user.email ?? null,      // keep if your table has this column
       quiz_name: quizName,
-      question_ids: ids,   // stays ordered
-      answers_ordered: answersOrdered,             // jsonb (unordered by nature) — we handle order in UI via `ordered`
+      question_ids: ids,                   // ordered real IDs (Q1→Qn)
+      answers_ordered: answersByPos,       // object: { q1: "...", q2: "..." }
       score: correct,
       total: picked.length,
       percentage: percent,
     };
 
-   (async () => {
-  const { data, error } = await supabase.from("quiz_results").insert([payload]).select();
-  if (error) {
-    console.error("Insert failed:", {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
-      payload,
-    });
-    setSaveStatus("error");
-  } else {
-    console.log("Inserted:", data);
-    setSaveStatus("saved");
-  }
-})();
-
-  }, [user, ids, answers, correct, percent, picked.length]);
+    (async () => {
+      const { error } = await supabase.from("quiz_results").insert([payload]).select();
+      if (error) {
+        console.error("Insert failed:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          payload,
+        });
+        setSaveStatus("error");
+      } else {
+        setSaveStatus("saved");
+      }
+    })();
+  }, [user?.id, user?.email, picked.length, ids, answersByPos, correct, percent]);
 
   function SaveChip() {
     if (saveStatus === "saving") {
@@ -151,22 +170,23 @@ ids.forEach((id, i) => {
               style={{ width: `${percent}%` }}
             />
           </div>
-
-    
         </div>
 
-        {/* Per-question breakdown (already ordered via `picked`) */}
+        {/* Per-question breakdown (ordered by index; maps Qn ↔ real qid) */}
         <div className="space-y-3">
           {picked.map((q, i) => {
-            const chosen = (answers[q.id] || "").trim();
-            const ok = chosen === (q.answer || "").trim();
+            const chosen = String(answersByPos[`q${i + 1}`] ?? "").trim();
+            const ok = chosen === String(q?.answer ?? "").trim();
+            const qid = ids[i]; // real question id aligned to Q{i+1}
             return (
               <div
-                key={q.id}
+                key={qid}
                 className="rounded-xl border border-slate-200 dark:border-slate-600 bg-white/80 dark:bg-slate-800/60 p-4 shadow-sm"
               >
                 <div className="mb-1 flex items-center justify-between">
-                  <div className="text-sm text-slate-500 dark:text-slate-400">Q{i + 1}</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    Q{i + 1} 
+                  </div>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs
                       ${
@@ -178,13 +198,15 @@ ids.forEach((id, i) => {
                     {ok ? "Correct" : "Incorrect"}
                   </span>
                 </div>
-                <div className="font-medium text-slate-900 dark:text-slate-100">{q.prompt}</div>
+                <div className="font-medium text-slate-900 dark:text-slate-100">
+                  {q?.prompt ?? "Unknown question"}
+                </div>
                 <div className="mt-2 text-sm text-slate-800 dark:text-slate-200">
                   Your answer: {chosen || <em>—</em>}
                 </div>
                 {!ok && (
                   <div className="text-sm text-slate-700 dark:text-slate-300">
-                    Correct: <b>{q.answer}</b>
+                    Correct: <b>{q?.answer}</b>
                   </div>
                 )}
               </div>
@@ -201,6 +223,9 @@ ids.forEach((id, i) => {
               hover:bg-slate-50 dark:hover:bg-slate-700 transition
             "
             onClick={() => {
+              // clear new keys (and legacy for safety)
+              localStorage.removeItem("presented_ids");
+              localStorage.removeItem("answers_ordered");
               localStorage.removeItem("selected_ids");
               localStorage.removeItem("answers");
               location.href = "/main";
