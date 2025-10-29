@@ -6,29 +6,29 @@ export default function Home() {
   const nav = useNavigate();
 
   return (
-
     <div
       className="
         min-h-screen flex items-center justify-center text-center px-4
-        bg-gradient-to-r from-slate-100 via-blue-100 to-slate-200
-        bg-[length:200%_200%] animate-gradientMove
-        dark:from-slate-800 dark:via-slate-900 dark:to-black
-        transition-colors
+        bg-charcoal dark:bg-gunmetal
+        dark:bg-gradient-to-b dark:from-gunmetal dark:via-gunmetal dark:to-charcoal
+        transition-colors duration-500
       "
     >
       <div
         className="
-          animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-xl w-full
-          bg-white/70 backdrop-blur-md
-          dark:bg-slate-800/70 dark:text-slate-100 dark:shadow-black/20
-          transition-colors
+          animate-fadeIn rounded-3xl p-8 md:p-10 max-w-xl w-full
+          bg-alice dark:bg-charcoal
+          text-gunmetal dark:text-alice
+          shadow-xl shadow-slate-900/10 dark:shadow-black/30
+          dark:ring-1 dark:ring-white/5
+          transition-all duration-500
         "
       >
         {/* Logo */}
         <div
           className="
             inline-block px-6 py-2 rounded-md text-white text-2xl font-bold tracking-widest shadow mb-6
-            bg-green-600 dark:bg-green-600
+            bg-green-600
           "
         >
           DAIKAI
@@ -42,26 +42,28 @@ export default function Home() {
         />
 
         {/* Title */}
-        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight mb-3">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">
           DAIKAI ENGINE BASIC KNOWLEDGE TEST
         </h1>
-        <p className="text-slate-700 dark:text-slate-300 mb-8">
+
+        {/* Subtitle (make secondary text readable in dark) */}
+        <p className="text-paynes dark:text-glaucous mb-8">
           Test your understanding of Daikai engine fundamentals in this 30-minute quiz.
         </p>
 
-        {/* CTA */}
+        {/* CTA — use glaucous in dark so it stands out from the charcoal card */}
         <button
           onClick={() => nav("/login")}
           className="
             px-8 py-3 rounded-full font-semibold shadow-lg transition-transform hover:scale-105
-            bg-blue-700 hover:bg-blue-800 text-white
-            dark:bg-blue-500 dark:hover:bg-blue-400
+            bg-charcoal text-white hover:opacity-90
+            dark:bg-glaucous dark:text-white
           "
         >
           Get Started
         </button>
 
-        <p className="text-xs text-slate-600 dark:text-slate-400 mt-8">
+        <p className="text-xs text-paynes dark:text-glaucous mt-8">
           © {new Date().getFullYear()} Daikai Technology Pte Ltd
         </p>
       </div>

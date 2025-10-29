@@ -18,7 +18,6 @@ export default function Login() {
         provider: "google",
         options: { redirectTo: window.location.origin + "/main" },
       });
-      // Redirects to Google, then back to /main on success
     } catch (e) {
       setErr(e?.message || "Something went wrong.");
       setLoading(false);
@@ -46,24 +45,24 @@ export default function Login() {
     <div
       className="
         min-h-screen flex items-center justify-center px-4
-        bg-gradient-to-r from-slate-100 via-blue-100 to-slate-200
-        dark:from-slate-800 dark:via-slate-900 dark:to-black
-        bg-[length:200%_200%] animate-gradientMove transition-colors
+        bg-charcoal dark:bg-gunmetal
+        transition-colors duration-500
       "
     >
       <form
         onSubmit={useEmail ? sendMagicLink : signInWithGoogle}
         className="
           animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-md w-full text-center
-          bg-white/70 backdrop-blur-md
-          dark:bg-slate-800/70 dark:text-slate-100 dark:shadow-black/30
-          transition-colors
+          bg-alice dark:bg-charcoal
+          text-gunmetal dark:text-alice
+          shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5
+          backdrop-blur-md transition-all duration-500
         "
       >
         {/* Logo */}
         <div
           className="
-            inline-block bg-green-600 dark:bg-green-600 px-6 py-2 rounded-md text-white
+            inline-block bg-green-600 px-6 py-2 rounded-md text-white
             text-2xl font-bold tracking-widest shadow mb-6
           "
         >
@@ -71,17 +70,19 @@ export default function Login() {
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight mb-2">
+        <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">
           Sign in to start
         </h2>
-        <p className="text-slate-700 dark:text-slate-300 mb-6">
-          {useEmail ? "We’ll email you a link." : "Continue with your Google account or email."}
+        <p className="text-paynes dark:text-glaucous mb-6">
+          {useEmail
+            ? "We’ll email you a link."
+            : "Continue with your Google account or email."}
         </p>
 
         {/* Email mode */}
-        {useEmail ? (
+        {useEmail && (
           <div className="text-left mb-4">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-paynes dark:text-glaucous mb-1">
               Email
             </label>
             <input
@@ -90,13 +91,15 @@ export default function Login() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border p-3 outline-none transition
-                         bg-white/90 dark:bg-slate-700/60
-                         focus:ring-2 focus:ring-blue-400 focus:border-blue-400
-                         dark:focus:ring-blue-500 border-slate-300 dark:border-slate-600"
+              className="
+                w-full rounded-xl border p-3 outline-none transition
+                bg-white/90 dark:bg-slate-700/60
+                focus:ring-2 focus:ring-glaucous focus:border-glaucous
+                dark:focus:ring-glaucous border-slate-300 dark:border-slate-600
+              "
             />
           </div>
-        ) : null}
+        )}
 
         {/* Primary action */}
         <div className="mt-2 flex flex-col gap-3">
@@ -126,9 +129,9 @@ export default function Login() {
               type="submit"
               disabled={loading}
               className="
-                rounded-full bg-blue-700 hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400
-                px-6 py-2.5 font-semibold text-white shadow-lg
-                transition-transform hover:scale-[1.02] disabled:opacity-60
+                rounded-full bg-charcoal dark:bg-glaucous text-white
+                px-6 py-2.5 font-semibold shadow-lg
+                transition-transform hover:scale-[1.02] hover:opacity-90 disabled:opacity-60
               "
             >
               {loading ? "Sending link…" : "Send link"}

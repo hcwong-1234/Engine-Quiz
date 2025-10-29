@@ -54,15 +54,26 @@ export default function Quiz() {
       <div
         className="
           min-h-screen flex items-center justify-center px-4
-          bg-gradient-to-r from-slate-100 via-blue-100 to-slate-200
-          dark:from-slate-800 dark:via-slate-900 dark:to-black
-          bg-[length:200%_200%] animate-gradientMove transition-colors
+          bg-charcoal dark:bg-gunmetal
+          transition-colors duration-500
         "
       >
-        <section className="animate-fadeIn bg-white/70 dark:bg-slate-800/70 dark:text-slate-100 backdrop-blur-md rounded-3xl shadow-xl p-8 md:p-10 max-w-xl w-full text-center">
-          <p className="text-slate-800 dark:text-slate-100">Loading…</p>
+        <section
+          className="
+            animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-xl w-full text-center
+            bg-alice dark:bg-charcoal
+            text-gunmetal dark:text-alice
+            shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5
+            backdrop-blur-md transition-all duration-500
+          "
+        >
+          <p>Loading…</p>
           <button
-            className="mt-4 rounded-full border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+            className="
+              mt-4 rounded-full border border-slate-300 dark:border-slate-600
+              px-5 py-2.5 text-slate-700 dark:text-slate-200
+              hover:bg-slate-50 dark:hover:bg-slate-700 transition
+            "
             onClick={() => nav("/main")}
           >
             Back to Instructions
@@ -81,7 +92,6 @@ export default function Quiz() {
     const key = `q${i}`; // e.g., q1, q2, ...
     const next = { ...answersOrdered, [key]: opt };
     setAnswersOrdered(next);
-    // localStorage updated by the useEffect above
   }
 
   function prev()  { if (i > 1) nav(`/quiz/q/${i - 1}`); }
@@ -94,42 +104,43 @@ export default function Quiz() {
     <div
       className="
         min-h-screen flex items-center justify-center px-4
-        bg-gradient-to-r from-slate-100 via-blue-100 to-slate-200
-        dark:from-slate-800 dark:via-slate-900 dark:to-black
-        bg-[length:200%_200%] animate-gradientMove transition-colors
+        bg-charcoal dark:bg-gunmetal
+        transition-colors duration-500
       "
     >
       <section
         className="
-          animate-fadeIn bg-white/70 dark:bg-slate-800/70 dark:text-slate-100 backdrop-blur-md
-          rounded-3xl shadow-xl p-8 md:p-10 max-w-2xl w-full
-          transition-colors
+          animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-2xl w-full
+          bg-alice dark:bg-charcoal
+          text-gunmetal dark:text-alice
+          shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5
+          backdrop-blur-md transition-all duration-500
         "
       >
         {/* Top bar: logo + timer */}
         <div className="flex items-center justify-between mb-4">
-          <div className="inline-block bg-green-600 dark:bg-green-600 px-4 py-1.5 rounded-md text-white text-lg font-bold tracking-widest shadow">
+          <div className="inline-block bg-green-600 px-4 py-1.5 rounded-md text-white text-lg font-bold tracking-widest shadow">
             DAIKAI
           </div>
-          <div className="text-sm md:text-base font-semibold text-slate-800 dark:text-slate-100">
+          <div className="text-sm md:text-base font-semibold">
             ⏱ {m}:{s}
           </div>
         </div>
 
         {/* Progress */}
-        <div className="mb-2 flex items-center justify-between text-sm text-slate-700 dark:text-slate-300">
+        <div className="mb-2 flex items-center justify-between text-sm text-paynes dark:text-glaucous">
           <div>Question <b>{i}</b> / {questions.length}</div>
           <div>{Math.round(progress)}%</div>
         </div>
         <div className="mb-6 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
           <div
-            className="h-2 rounded-full bg-blue-600 dark:bg-blue-500 transition-all"
+            className="h-2 rounded-full bg-charcoal dark:bg-glaucous transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
 
         {/* Question */}
-        <h3 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 mb-4">
+        <h3 className="text-lg md:text-xl font-semibold mb-4">
           {q.prompt}
         </h3>
 
@@ -143,12 +154,12 @@ export default function Quiz() {
                 onClick={() => pick(opt)}
                 className={[
                   "text-left rounded-xl border p-3 md:p-4 transition shadow-sm",
-                  // hover states
-                  "hover:border-blue-300 hover:bg-blue-50/50",
-                  "dark:hover:border-blue-400 dark:hover:bg-blue-500/10",
+                  // hover states (use glaucous accents)
+                  "hover:border-glaucous hover:bg-glaucous/10",
+                  "dark:hover:border-glaucous dark:hover:bg-glaucous/15",
                   // base states
                   active
-                    ? "border-blue-500 bg-blue-50 ring-1 ring-blue-200 dark:border-blue-400 dark:bg-blue-500/20 dark:ring-blue-500/30"
+                    ? "border-glaucous bg-glaucous/15 ring-1 ring-glaucous/30"
                     : "border-slate-300 bg-white/80 dark:border-slate-600 dark:bg-slate-700/60"
                 ].join(" ")}
               >
@@ -162,7 +173,11 @@ export default function Quiz() {
         <div className="mt-8 flex items-center justify-between gap-3">
           <button
             onClick={prev}
-            className="rounded-full border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-40"
+            className="
+              rounded-full border border-slate-300 dark:border-slate-600
+              px-5 py-2.5 text-slate-700 dark:text-slate-200
+              hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-40
+            "
             disabled={i === 1}
           >
             Back
@@ -171,7 +186,12 @@ export default function Quiz() {
           {i < questions.length ? (
             <button
               onClick={next}
-              className="rounded-full bg-blue-700 hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400 px-6 py-2.5 font-semibold text-white shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-50"
+              className="
+                rounded-full px-6 py-2.5 font-semibold text-white shadow-lg
+                bg-charcoal hover:opacity-90
+                dark:bg-glaucous dark:hover:opacity-90
+                transition-transform hover:scale-[1.02] disabled:opacity-50
+              "
               disabled={!chosen}
             >
               Next
@@ -179,7 +199,12 @@ export default function Quiz() {
           ) : (
             <button
               onClick={submit}
-              className="rounded-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 px-6 py-2.5 font-semibold text-white shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-50"
+              className="
+                rounded-full px-6 py-2.5 font-semibold text-white shadow-lg
+                bg-emerald-600 hover:bg-emerald-700
+                dark:bg-emerald-500 dark:hover:bg-emerald-400
+                transition-transform hover:scale-[1.02] disabled:opacity-50
+              "
               disabled={!chosen}
             >
               Submit
