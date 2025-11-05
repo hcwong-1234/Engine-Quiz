@@ -74,7 +74,7 @@
       "the Exhaust manifold side",
       "The fuel injection pump side."
     ],
-    "answer": "the opposite side of the output end"
+    "answer": "the opposite side of the output end."
   },
   {
     "id": "q8",
@@ -355,12 +355,12 @@
     "id": "q33",
     "prompt": "The major difference specification of DE-23 engine and DEL-23 engine is",
     "options": [
-      "I and II",
-      "II and III",
-      "I and III",
-      "I, II and III"
+      "cylinder bore",
+      "stroke length",
+      "fuel spec",
+      "all of the above."
     ],
-    "answer": "II and III"
+    "answer": "stroke length"
   },
   {
     "id": "q34",
