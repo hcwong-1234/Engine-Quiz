@@ -6,20 +6,48 @@ import { supabase } from "@/lib/supabaseClient";
 
 const LIMIT_MIN = 30; // 30-minute timer
 
+const LS_SELECTED_IDS = "selected_ids";
+const LS_PRESENTED_IDS = "presented_ids";
+const LS_RUN_ID = "quiz_run_id";
+const LS_RUN_FINGERPRINT = "quiz_run_fingerprint";
+
+// Small helper to get a stable fingerprint for the chosen set/order
+const fingerprint = (ids) => JSON.stringify(ids || []);
+const answersKeyFor = (runId) => `answers_ordered::${runId}`;
+
 export default function Quiz() {
   const { idx } = useParams();
   const nav = useNavigate();
-  const i = Math.max(1, parseInt(idx || "1", 10)); // 1-based index for display/Q-number
+  const i = Math.max(1, parseInt(idx || "1", 10)); // 1-based index
 
   // Selected IDs chosen on Main.jsx (this is already your display order)
-  const selectedIds = JSON.parse(localStorage.getItem("selected_ids") || "[]");
+  const selectedIds = JSON.parse(localStorage.getItem(LS_SELECTED_IDS) || "[]");
 
-  // 🔹 Save the exact display order of real IDs for Results (Q1..Qn mapping)
+  // Save the exact display order of real IDs for Results (Q1..Qn mapping)
   useEffect(() => {
     if (selectedIds.length) {
-      localStorage.setItem("presented_ids", JSON.stringify(selectedIds));
+      localStorage.setItem(LS_PRESENTED_IDS, JSON.stringify(selectedIds));
     }
   }, [selectedIds]);
+
+  // Establish a runId that's tied to the current selectedIds.
+  // If the fingerprint changes (new quiz selection/order), start a new run.
+  const [runId, setRunId] = useState(() => {
+    const fpNow = fingerprint(selectedIds);
+    const prevFp = localStorage.getItem(LS_RUN_FINGERPRINT);
+    let rid = localStorage.getItem(LS_RUN_ID);
+
+    if (!rid || fpNow !== prevFp) {
+      rid = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      localStorage.setItem(LS_RUN_ID, rid);
+      localStorage.setItem(LS_RUN_FINGERPRINT, fpNow);
+      // clear any stale global key if it existed
+      localStorage.removeItem("answers_ordered");
+      // also clear previous namespaced key if any (optional)
+      // not strictly necessary because we won't read it again
+    }
+    return rid;
+  });
 
   // Map IDs to full question objects (memoized)
   const questions = useMemo(
@@ -28,52 +56,39 @@ export default function Quiz() {
   );
   const q = questions[i - 1];
 
-  // 🔹 Answers ORDERED BY POSITION (q1..q25), persisted to localStorage
-  // shape: { q1: "I and II", q2: "All of the above", ... }
-  const [answersOrdered, setAnswersOrdered] = useState(
-    () => JSON.parse(localStorage.getItem("answers_ordered") || "{}")
+  // Answers ORDERED BY POSITION (q1..qN), persisted to localStorage under this runId
+  const ANSWERS_KEY = answersKeyFor(runId);
+  const [answersOrdered, setAnswersOrdered] = useState(() =>
+    JSON.parse(localStorage.getItem(ANSWERS_KEY) || "{}")
   );
   useEffect(() => {
-    localStorage.setItem("answers_ordered", JSON.stringify(answersOrdered));
-  }, [answersOrdered]);
+    localStorage.setItem(ANSWERS_KEY, JSON.stringify(answersOrdered));
+  }, [answersOrdered, ANSWERS_KEY]);
 
   // Timer → auto-submit at 0
   const [left, setLeft] = useState(LIMIT_MIN * 60);
   useEffect(() => {
     const id = setInterval(() => {
-      setLeft(s => {
-        if (s <= 1) { clearInterval(id); nav("/results"); return 0; }
+      setLeft((s) => {
+        if (s <= 1) {
+          clearInterval(id);
+          nav("/results");
+          return 0;
+        }
         return s - 1;
       });
     }, 1000);
     return () => clearInterval(id);
   }, [nav]);
 
+  // Early loading state
   if (!q) {
     return (
-      <div
-        className="
-          min-h-screen flex items-center justify-center px-4
-          bg-charcoal dark:bg-gunmetal
-          transition-colors duration-500
-        "
-      >
-        <section
-          className="
-            animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-xl w-full text-center
-            bg-alice dark:bg-charcoal
-            text-gunmetal dark:text-alice
-            shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5
-            backdrop-blur-md transition-all duration-500
-          "
-        >
+      <div className="min-h-screen flex items-center justify-center px-4 bg-charcoal dark:bg-gunmetal transition-colors duration-500">
+        <section className="animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-xl w-full text-center bg-alice dark:bg-charcoal text-gunmetal dark:text-alice shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5 backdrop-blur-md transition-all duration-500">
           <p>Loading…</p>
           <button
-            className="
-              mt-4 rounded-full border border-slate-300 dark:border-slate-600
-              px-5 py-2.5 text-slate-700 dark:text-slate-200
-              hover:bg-slate-50 dark:hover:bg-slate-700 transition
-            "
+            className="mt-4 rounded-full border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
             onClick={() => nav("/main")}
           >
             Back to Instructions
@@ -83,53 +98,55 @@ export default function Quiz() {
     );
   }
 
-  // 🔹 Chosen answer is read by POSITION key (q{index})
-  const chosen = answersOrdered[`q${i}`];
-  const m = Math.floor(left / 60), s = String(left % 60).padStart(2, "0");
+  // Current choice & helpers (strict)
+  const chosen = ((answersOrdered[`q${i}`] ?? "") + "").trim();
+  const hasChoice = chosen.length > 0;
 
-  // 🔹 Save answer by POSITION (q{index}) — NOT by q.id
+  // Route guard: don't allow opening q>1 if previous is unanswered (prevents URL skipping)
+  useEffect(() => {
+    if (i > 1) {
+      const prevKey = `q${i - 1}`;
+      const prevAns = ((answersOrdered[prevKey] ?? "") + "").trim();
+      if (!prevAns) {
+        nav(`/quiz/q/${i - 1}`, { replace: true });
+      }
+    }
+  }, [i, answersOrdered, nav]);
+
   function pick(opt) {
-    const key = `q${i}`; // e.g., q1, q2, ...
-    const next = { ...answersOrdered, [key]: opt };
-    setAnswersOrdered(next);
+    const key = `q${i}`;
+    setAnswersOrdered((a) => ({ ...a, [key]: opt }));
   }
 
-  function prev()  { if (i > 1) nav(`/quiz/q/${i - 1}`); }
-  function next()  { if (i < questions.length) nav(`/quiz/q/${i + 1}`); }
-  function submit(){ nav("/results"); }
+  function prev() {
+    if (i > 1) nav(`/quiz/q/${i - 1}`);
+  }
 
+  // Progress & timer formatting
   const progress = (i / questions.length) * 100;
+  const m = Math.floor(left / 60);
+  const s = String(left % 60).padStart(2, "0");
+
+  // Resolve /public paths even under subpaths
+  const fromPublic = (p) =>
+    p ? (p.startsWith("/") ? `${import.meta.env.BASE_URL}${p.slice(1)}` : p) : null;
 
   return (
-    <div
-      className="
-        min-h-screen flex items-center justify-center px-4
-        bg-charcoal dark:bg-gunmetal
-        transition-colors duration-500
-      "
-    >
-      <section
-        className="
-          animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-2xl w-full
-          bg-alice dark:bg-charcoal
-          text-gunmetal dark:text-alice
-          shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5
-          backdrop-blur-md transition-all duration-500
-        "
-      >
+    <div className="min-h-screen flex items-center justify-center px-4 bg-charcoal dark:bg-gunmetal transition-colors duration-500">
+      <section className="animate-fadeIn rounded-3xl shadow-xl p-8 md:p-10 max-w-2xl w-full bg-alice dark:bg-charcoal text-gunmetal dark:text-alice shadow-slate-900/10 dark:shadow-black/30 dark:ring-1 dark:ring-white/5 backdrop-blur-md transition-all duration-500">
         {/* Top bar: logo + timer */}
         <div className="flex items-center justify-between mb-4">
           <div className="inline-block bg-green-600 px-4 py-1.5 rounded-md text-white text-lg font-bold tracking-widest shadow">
             DAIKAI
           </div>
-          <div className="text-sm md:text-base font-semibold">
-            ⏱ {m}:{s}
-          </div>
+          <div className="text-sm md:text-base font-semibold">⏱ {m}:{s}</div>
         </div>
 
         {/* Progress */}
         <div className="mb-2 flex items-center justify-between text-sm text-paynes dark:text-glaucous">
-          <div>Question <b>{i}</b> / {questions.length}</div>
+          <div>
+            Question <b>{i}</b> / {questions.length}
+          </div>
           <div>{Math.round(progress)}%</div>
         </div>
         <div className="mb-6 h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700">
@@ -139,28 +156,37 @@ export default function Quiz() {
           />
         </div>
 
-        {/* Question */}
-        <h3 className="text-lg md:text-xl font-semibold mb-4">
-          {q.prompt}
-        </h3>
+        {/* Question + (optional) image */}
+        <div className="mb-6">
+          <h3 className="text-lg md:text-xl font-semibold mb-3">{q.prompt}</h3>
+          {q.image && (
+            <figure className="rounded-xl overflow-hidden bg-white/60 shadow border border-black/5">
+              <img
+                src={fromPublic(q.image)}
+                alt="Question illustration"
+                className="w-full max-h-72 object-contain bg-white"
+                onError={(e) => e.currentTarget.closest("figure")?.remove()}
+              />
+            </figure>
+          )}
+        </div>
 
         {/* Options */}
         <div className="grid gap-3">
-          {q.options.map(opt => {
+          {q.options.map((opt) => {
             const active = chosen === opt;
             return (
               <button
                 key={opt}
+                type="button"
                 onClick={() => pick(opt)}
                 className={[
                   "text-left rounded-xl border p-3 md:p-4 transition shadow-sm",
-                  // hover states (use glaucous accents)
                   "hover:border-glaucous hover:bg-glaucous/10",
                   "dark:hover:border-glaucous dark:hover:bg-glaucous/15",
-                  // base states
                   active
                     ? "border-glaucous bg-glaucous/15 ring-1 ring-glaucous/30"
-                    : "border-slate-300 bg-white/80 dark:border-slate-600 dark:bg-slate-700/60"
+                    : "border-slate-300 bg-white/80 dark:border-slate-600 dark:bg-slate-700/60",
                 ].join(" ")}
               >
                 {opt}
@@ -172,12 +198,9 @@ export default function Quiz() {
         {/* Nav buttons */}
         <div className="mt-8 flex items-center justify-between gap-3">
           <button
+            type="button"
             onClick={prev}
-            className="
-              rounded-full border border-slate-300 dark:border-slate-600
-              px-5 py-2.5 text-slate-700 dark:text-slate-200
-              hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-40
-            "
+            className="rounded-full border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-40"
             disabled={i === 1}
           >
             Back
@@ -185,27 +208,33 @@ export default function Quiz() {
 
           {i < questions.length ? (
             <button
-              onClick={next}
+              type="button"
+              onClick={hasChoice ? () => nav(`/quiz/q/${i + 1}`) : undefined}
+              disabled={!hasChoice}
+              aria-disabled={!hasChoice}
               className="
                 rounded-full px-6 py-2.5 font-semibold text-white shadow-lg
                 bg-charcoal hover:opacity-90
                 dark:bg-glaucous dark:hover:opacity-90
-                transition-transform hover:scale-[1.02] disabled:opacity-50
+                transition-transform hover:scale-[1.02]
+                disabled:opacity-50 disabled:pointer-events-none
               "
-              disabled={!chosen}
             >
               Next
             </button>
           ) : (
             <button
-              onClick={submit}
+              type="button"
+              onClick={hasChoice ? () => nav('/results') : undefined}
+              disabled={!hasChoice}
+              aria-disabled={!hasChoice}
               className="
                 rounded-full px-6 py-2.5 font-semibold text-white shadow-lg
                 bg-emerald-600 hover:bg-emerald-700
-                dark:bg-emerald-500 dark:hover:bg-emerald-400
-                transition-transform hover:scale-[1.02] disabled:opacity-50
+                dark:bg-emerald-500 dark:hover:opacity-90
+                transition-transform hover:scale-[1.02]
+                disabled:opacity-50 disabled:pointer-events-none
               "
-              disabled={!chosen}
             >
               Submit
             </button>

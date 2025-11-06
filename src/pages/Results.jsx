@@ -6,9 +6,16 @@ import { useAuth } from "@/providers/AuthProvider";
 export default function Results() {
   // ---------- Load attempt from localStorage ----------
   const presentedIdsRaw = localStorage.getItem("presented_ids");
-  const answersOrderedRaw = localStorage.getItem("answers_ordered");
   const legacyIdsRaw = localStorage.getItem("selected_ids");
   const legacyAnswersRaw = localStorage.getItem("answers");
+
+  // 🔹 NEW: support namespaced answers per run
+  const runId = localStorage.getItem("quiz_run_id") || "";
+  const answersKey = runId ? `answers_ordered::${runId}` : "answers_ordered";
+  const answersOrderedRaw =
+    localStorage.getItem(answersKey) ||
+    localStorage.getItem("answers_ordered") || // legacy fallback
+    null;
 
   const ids = useMemo(() => {
     const newIds = JSON.parse(presentedIdsRaw || "[]");
@@ -19,6 +26,8 @@ export default function Results() {
   const answersByPos = useMemo(() => {
     const obj = JSON.parse(answersOrderedRaw || "{}");
     if (obj && typeof obj === "object" && Object.keys(obj).length) return obj;
+
+    // Legacy fallback: convert id-keyed answers -> position-keyed (q1, q2, ...)
     const legacy = JSON.parse(legacyAnswersRaw || "{}");
     const byPos = {};
     ids.forEach((qid, i) => { byPos[`q${i + 1}`] = (legacy[qid] ?? "").trim(); });
@@ -58,7 +67,7 @@ export default function Results() {
       user_email: user.email ?? null,
       quiz_name: "User's knowledge",
       question_ids: ids,
-      answers_ordered: answersByPos,
+      answers_ordered: answersByPos, // matches your table column
       score: correct,
       total: picked.length,
       percentage: percent,
@@ -208,10 +217,15 @@ export default function Results() {
               hover:bg-slate-50 dark:hover:bg-slate-700 transition
             "
             onClick={() => {
+              // 🔹 Clear both legacy and namespaced keys
               localStorage.removeItem("presented_ids");
               localStorage.removeItem("answers_ordered");
               localStorage.removeItem("selected_ids");
               localStorage.removeItem("answers");
+              localStorage.removeItem("quiz_run_id");
+              localStorage.removeItem("quiz_run_fingerprint");
+              // also clear the namespaced answers for this run if present
+              if (runId) localStorage.removeItem(`answers_ordered::${runId}`);
               location.href = "/main";
             }}
           >
