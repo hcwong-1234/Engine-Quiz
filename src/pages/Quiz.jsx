@@ -164,7 +164,7 @@ export default function Quiz() {
               <img
                 src={fromPublic(q.image)}
                 alt="Question illustration"
-                className="w-full max-h-72 object-contain bg-white"
+                className="w-full max-h-40 object-contain bg-white"
                 onError={(e) => e.currentTarget.closest("figure")?.remove()}
               />
             </figure>
