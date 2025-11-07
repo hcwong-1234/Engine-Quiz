@@ -95,6 +95,8 @@ export default function Results() {
     return null;
   }
 
+  const REVEAL_CORRECT_IF_WRONG = false;
+
   return (
     <div
       className="
@@ -195,7 +197,8 @@ export default function Results() {
                     {chosen || <em>—</em>}
                   </span>
                 </div>
-                {!ok && (
+                
+                {!ok && REVEAL_CORRECT_IF_WRONG && (
                   <div className="text-sm mt-1">
                     <span className="font-semibold">Correct answer:</span>{" "}
                     <span className="text-emerald-600 dark:text-emerald-400">
