@@ -158,7 +158,7 @@ export default function Quiz() {
 
         {/* Question + (optional) image */}
         <div className="mb-6">
-          <h3 className="text-lg md:text-xl font-semibold mb-3">{q.prompt}</h3>
+          <h3 className="text-lg md:text-l font-semibold mb-3 whitespace-pre-line leading-normal">{q.prompt}</h3>
           {q.image && (
             <figure className="rounded-xl overflow-hidden bg-white/60 shadow border border-black/5">
               <img
