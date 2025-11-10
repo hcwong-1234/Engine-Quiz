@@ -30,12 +30,14 @@ export default function Results() {
     // Legacy fallback: convert id-keyed answers -> position-keyed (q1, q2, ...)
     const legacy = JSON.parse(legacyAnswersRaw || "{}");
     const byPos = {};
-    ids.forEach((qid, i) => { byPos[`q${i + 1}`] = (legacy[qid] ?? "").trim(); });
+    ids.forEach((qid, i) => {
+      byPos[`q${i + 1}`] = (legacy[qid] ?? "").trim();
+    });
     return byPos;
   }, [answersOrderedRaw, legacyAnswersRaw, ids]);
 
   const picked = useMemo(
-    () => ids.map(id => all.find(q => q.id === id)).filter(Boolean),
+    () => ids.map((id) => all.find((q) => q.id === id)).filter(Boolean),
     [ids]
   );
 
@@ -57,6 +59,10 @@ export default function Results() {
   const [saveStatus, setSaveStatus] = useState("idle");
   const savedRef = useRef(false);
 
+  // Email status + one-shot guard
+  const [emailStatus, setEmailStatus] = useState("idle"); // idle | sending | sent | error
+  const emailSentRef = useRef(false);
+
   useEffect(() => {
     if (!user?.id || picked.length === 0 || savedRef.current) return;
     savedRef.current = true;
@@ -74,27 +80,115 @@ export default function Results() {
     };
 
     (async () => {
-      const { error } = await supabase.from("quiz_results").insert([payload]).select();
+      const { error } = await supabase
+        .from("quiz_results")
+        .insert([payload])
+        .select();
+
       if (error) {
         console.error("Insert failed:", error);
         setSaveStatus("error");
-      } else {
-        setSaveStatus("saved");
+        return;
       }
-    })();
-  }, [user?.id, user?.email, picked.length, ids, answersByPos, correct, percent]);
 
-  // ---------- Status chip ----------
+      setSaveStatus("saved");
+
+      // ---- Send result email once ----
+// ---- Send result email once ----
+// ---- Send result email once ----
+if (!emailSentRef.current && user?.email) {
+  emailSentRef.current = true;
+  setEmailStatus("sending");
+
+  try {
+    const reviewUrl =
+      window.location.origin + "/results" + (runId ? `?run=${runId}` : "");
+
+    const { data, error } = await supabase.functions.invoke("send-results", {
+      body: {
+        to: user.email,
+        score: correct,
+        total: picked.length,
+        percentage: percent,
+        reviewUrl,
+        // html: `<h2>DAIKAI Quiz Results</h2>
+        //        <p><b>Score:</b> ${correct}/${picked.length} (${percent}%)</p>`
+      },
+    });
+
+    if (error) throw error;
+    setEmailStatus("sent");
+  } catch (e) {
+  // ⬇️ These logs show the exact payload your Edge Function returned
+  console.error("Email send failed:", {
+    name: e?.name,
+    message: e?.message,
+    status: e?.context?.status,
+    body: e?.context ?? null,   // should include { ok:false, error, details }
+  });
+  setEmailStatus("error");
+}
+}
+
+
+    })();
+  }, [
+    user?.id,
+    user?.email,
+    picked.length,
+    ids,
+    answersByPos,
+    correct,
+    percent,
+    runId,
+  ]);
+
+  // ---------- Status chips ----------
   function SaveChip() {
     if (saveStatus === "saving")
-      return <span className="ml-3 inline-flex items-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 px-2 py-0.5 text-xs">Saving…</span>;
+      return (
+        <span className="ml-3 inline-flex items-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 px-2 py-0.5 text-xs">
+          Saving…
+        </span>
+      );
     if (saveStatus === "saved")
-      return <span className="ml-3 inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 px-2 py-0.5 text-xs">Saved</span>;
+      return (
+        <span className="ml-3 inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 px-2 py-0.5 text-xs">
+          Saved
+        </span>
+      );
     if (saveStatus === "error")
-      return <span className="ml-3 inline-flex items-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 px-2 py-0.5 text-xs">Save failed</span>;
+      return (
+        <span className="ml-3 inline-flex items-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 px-2 py-0.5 text-xs">
+          Save failed
+        </span>
+      );
     return null;
   }
 
+  function EmailChip() {
+    if (emailStatus === "sending")
+      return (
+        <span className="ml-2 inline-flex items-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300 px-2 py-0.5 text-xs">
+          Emailing…
+        </span>
+      );
+    if (emailStatus === "sent")
+      return (
+        <span className="ml-2 inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 px-2 py-0.5 text-xs">
+          Email sent
+        </span>
+      );
+    if (emailStatus === "error")
+      return (
+        <span className="ml-2 inline-flex items-center rounded-full bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 px-2 py-0.5 text-xs">
+          Email failed
+        </span>
+      );
+    return null;
+  }
+
+  // Toggle whether to reveal the correct answer when the user is wrong
   const REVEAL_CORRECT_IF_WRONG = false;
 
   return (
@@ -121,6 +215,7 @@ export default function Results() {
               DAIKAI
             </div>
             <SaveChip />
+            <EmailChip />
           </div>
           <div className="text-sm text-paynes dark:text-glaucous">
             Attempt reviewed
@@ -184,7 +279,9 @@ export default function Results() {
                   </span>
                 </div>
 
-                <div className="font-medium mb-1">{q?.prompt ?? "Unknown question"}</div>
+                <div className="font-medium mb-1">
+                  {q?.prompt ?? "Unknown question"}
+                </div>
                 <div className="text-sm">
                   <span className="font-semibold">Your answer:</span>{" "}
                   <span
@@ -197,7 +294,7 @@ export default function Results() {
                     {chosen || <em>—</em>}
                   </span>
                 </div>
-                
+
                 {!ok && REVEAL_CORRECT_IF_WRONG && (
                   <div className="text-sm mt-1">
                     <span className="font-semibold">Correct answer:</span>{" "}
