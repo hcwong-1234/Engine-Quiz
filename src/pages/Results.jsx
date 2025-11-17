@@ -1,15 +1,28 @@
+// src/pages/Results.jsx
+
+// 🆕 Added useSearchParams so we can read ?result_id from the URL
 import { useEffect, useRef, useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import all from "../data/questions.json";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/providers/AuthProvider";
 
 export default function Results() {
-  // ---------- Load attempt from localStorage ----------
+  const { user } = useAuth();
+
+  // 🆕 When user clicks from email, we'll send them something like:
+  //     /results?result_id=<quiz_results.id>
+  // This line reads that ID from the URL (or null if not there).
+  const [searchParams] = useSearchParams();
+  const resultIdFromUrl = searchParams.get("result_id");
+
+  // ---------- LocalStorage-based attempt (existing behaviour) ----------
+  // 🔸 This is used when resultIdFromUrl is NOT present
   const presentedIdsRaw = localStorage.getItem("presented_ids");
   const legacyIdsRaw = localStorage.getItem("selected_ids");
   const legacyAnswersRaw = localStorage.getItem("answers");
 
-  // 🔹 NEW: support namespaced answers per run
+  // 🔸 Namespaced answers per run (local flow)
   const runId = localStorage.getItem("quiz_run_id") || "";
   const answersKey = runId ? `answers_ordered::${runId}` : "answers_ordered";
   const answersOrderedRaw =
@@ -17,13 +30,66 @@ export default function Results() {
     localStorage.getItem("answers_ordered") || // legacy fallback
     null;
 
+  // ---------- 🆕 Remote/shared-link state (Supabase lookup by result_id) ----------
+  const [remoteRow, setRemoteRow] = useState(null); // data from quiz_results
+  const [loadingRemote, setLoadingRemote] = useState(false);
+  const [remoteError, setRemoteError] = useState(null);
+
+  // 🆕 If we have ?result_id=..., fetch that exact row from Supabase
+  useEffect(() => {
+    if (!resultIdFromUrl) return; // nothing to do for normal/local flow
+
+    let cancelled = false;
+    setLoadingRemote(true);
+    setRemoteError(null);
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("quiz_results")
+        .select("question_ids, answers_ordered")
+        .eq("id", resultIdFromUrl)
+        .single();
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Failed to load shared result:", error);
+        setRemoteError(
+          "Unable to load this result. It may have expired or been deleted."
+        );
+      } else {
+        setRemoteRow(data);
+      }
+
+      setLoadingRemote(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resultIdFromUrl]);
+
+  // ---------- IDs source: remote (shared link) OR localStorage ----------
   const ids = useMemo(() => {
+    // 🆕 Shared-link mode: use IDs stored in quiz_results.question_ids
+    if (resultIdFromUrl && Array.isArray(remoteRow?.question_ids)) {
+      return remoteRow.question_ids;
+    }
+
+    // Existing local behaviour
     const newIds = JSON.parse(presentedIdsRaw || "[]");
     if (Array.isArray(newIds) && newIds.length) return newIds;
     return JSON.parse(legacyIdsRaw || "[]");
-  }, [presentedIdsRaw, legacyIdsRaw]);
+  }, [resultIdFromUrl, remoteRow, presentedIdsRaw, legacyIdsRaw]);
 
+  // ---------- Answers source: remote (shared link) OR localStorage ----------
   const answersByPos = useMemo(() => {
+    // 🆕 Shared-link mode: answers_ordered already in position form: { q1: "...", q2: "..." }
+    if (resultIdFromUrl && remoteRow?.answers_ordered) {
+      return remoteRow.answers_ordered;
+    }
+
+    // Existing local behaviour: try namespaced/ordered first
     const obj = JSON.parse(answersOrderedRaw || "{}");
     if (obj && typeof obj === "object" && Object.keys(obj).length) return obj;
 
@@ -34,8 +100,15 @@ export default function Results() {
       byPos[`q${i + 1}`] = (legacy[qid] ?? "").trim();
     });
     return byPos;
-  }, [answersOrderedRaw, legacyAnswersRaw, ids]);
+  }, [
+    resultIdFromUrl,
+    remoteRow,
+    answersOrderedRaw,
+    legacyAnswersRaw,
+    ids,
+  ]);
 
+  // ---------- Build full question objects ----------
   const picked = useMemo(
     () => ids.map((id) => all.find((q) => q.id === id)).filter(Boolean),
     [ids]
@@ -54,16 +127,18 @@ export default function Results() {
     return { correct: c, percent: pct };
   }, [picked, answersByPos]);
 
-  // ---------- Save to Supabase ----------
-  const { user } = useAuth();
+  // ---------- Save to Supabase (local-only) ----------
   const [saveStatus, setSaveStatus] = useState("idle");
   const savedRef = useRef(false);
 
-  // Email status + one-shot guard
+  // ---------- Email status + one-shot guard (local-only) ----------
   const [emailStatus, setEmailStatus] = useState("idle"); // idle | sending | sent | error
   const emailSentRef = useRef(false);
 
   useEffect(() => {
+    // 🆕 If user is viewing via shared email link (?result_id=...), DO NOT save or send email
+    if (resultIdFromUrl) return;
+
     if (!user?.id || picked.length === 0 || savedRef.current) return;
     savedRef.current = true;
     setSaveStatus("saving");
@@ -80,56 +155,51 @@ export default function Results() {
     };
 
     (async () => {
-      const { error } = await supabase
-        .from("quiz_results")
-        .insert([payload])
-        .select();
+      // 🆕 Insert and return the new row including its id
+const { data, error } = await supabase
+  .from("quiz_results")
+  .insert([payload])
+  .select("id")
+  .single();
 
-      if (error) {
-        console.error("Insert failed:", error);
-        setSaveStatus("error");
-        return;
-      }
+if (error) {
+  console.error("Insert failed:", error);
+  setSaveStatus("error");
+  return;
+}
 
-      setSaveStatus("saved");
+setSaveStatus("saved");
 
-      // ---- Send result email once ----
-// ---- Send result email once ----
+// 🆕 This is the quiz_results.id you will pass to the Edge Function
+const resultId = data?.id;
+
 // ---- Send result email once ----
 if (!emailSentRef.current && user?.email) {
   emailSentRef.current = true;
   setEmailStatus("sending");
 
   try {
-    const reviewUrl =
-      window.location.origin + "/results" + (runId ? `?run=${runId}` : "");
+    const { error: fnError } = await supabase.functions.invoke(
+      "send-results",
+      {
+        body: {
+          to: user.email,
+          score: correct,
+          total: picked.length,
+          percentage: percent,
+          resultId, // 🆕 new method
+          quiz_name: "User's knowledge",
+        },
+      }
+    );
 
-    const { data, error } = await supabase.functions.invoke("send-results", {
-      body: {
-        to: user.email,
-        score: correct,
-        total: picked.length,
-        percentage: percent,
-        reviewUrl,
-        // html: `<h2>DAIKAI Quiz Results</h2>
-        //        <p><b>Score:</b> ${correct}/${picked.length} (${percent}%)</p>`
-      },
-    });
-
-    if (error) throw error;
+    if (fnError) throw fnError;
     setEmailStatus("sent");
   } catch (e) {
-  // ⬇️ These logs show the exact payload your Edge Function returned
-  console.error("Email send failed:", {
-    name: e?.name,
-    message: e?.message,
-    status: e?.context?.status,
-    body: e?.context ?? null,   // should include { ok:false, error, details }
-  });
-  setEmailStatus("error");
+    console.error("Email send failed:", e);
+    setEmailStatus("error");
+  }
 }
-}
-
 
     })();
   }, [
@@ -141,6 +211,7 @@ if (!emailSentRef.current && user?.email) {
     correct,
     percent,
     runId,
+    resultIdFromUrl, // 🆕 make sure effect re-runs correctly if URL changes
   ]);
 
   // ---------- Status chips ----------
@@ -191,6 +262,39 @@ if (!emailSentRef.current && user?.email) {
   // Toggle whether to reveal the correct answer when the user is wrong
   const REVEAL_CORRECT_IF_WRONG = false;
 
+  // ---------- 🆕 Loading / error state for shared-link mode ----------
+  if (resultIdFromUrl && loadingRemote) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 bg-charcoal dark:bg-gunmetal">
+        <div className="rounded-3xl shadow-xl p-8 max-w-md w-full bg-alice dark:bg-charcoal text-gunmetal dark:text-alice">
+          <div className="text-center text-sm text-paynes dark:text-glaucous">
+            Loading results…
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (resultIdFromUrl && remoteError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 bg-charcoal dark:bg-gunmetal">
+        <section className="rounded-3xl shadow-xl p-8 max-w-md w-full bg-alice dark:bg-charcoal text-gunmetal dark:text-alice">
+          <h2 className="text-xl font-bold mb-2">Results unavailable</h2>
+          <p className="text-sm text-paynes dark:text-glaucous mb-4">
+            {remoteError}
+          </p>
+          <button
+            className="rounded-full px-6 py-2.5 font-semibold text-white shadow-lg bg-charcoal hover:opacity-90 dark:bg-glaucous dark:hover:opacity-90 transition-transform hover:scale-[1.02]"
+            onClick={() => (location.href = "/")}
+          >
+            Back to Home
+          </button>
+        </section>
+      </div>
+    );
+  }
+
+  // ---------- Main UI ----------
   return (
     <div
       className="
@@ -214,11 +318,13 @@ if (!emailSentRef.current && user?.email) {
             <div className="inline-block bg-green-600 px-4 py-1.5 rounded-md text-white text-lg font-bold tracking-widest shadow">
               DAIKAI
             </div>
-            <SaveChip />
-            <EmailChip />
+            {/* 🆕 Only show save/email chips when this is a local results view,
+                NOT when opened via shared ?result_id link */}
+            {!resultIdFromUrl && <SaveChip />}
+            {!resultIdFromUrl && <EmailChip />}
           </div>
           <div className="text-sm text-paynes dark:text-glaucous">
-            Attempt reviewed
+            {resultIdFromUrl ? "Shared results view" : "Attempt reviewed"}
           </div>
         </div>
 
