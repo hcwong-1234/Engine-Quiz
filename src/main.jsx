@@ -38,13 +38,9 @@ const router = createBrowserRouter([
       },
       {
         path: "results",
-        element: (
-          <PrivateRoute>
-            <Results />
-          </PrivateRoute>
-        ),
+        element: <Results />,
       },
-    ],
+          ],
   },
 ]);
 

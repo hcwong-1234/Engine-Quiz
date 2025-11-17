@@ -6,15 +6,28 @@ import { useSearchParams } from "react-router-dom";
 import all from "../data/questions.json";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Results() {
   const { user } = useAuth();
+  const nav = useNavigate(); 
+
 
   // 🆕 When user clicks from email, we'll send them something like:
   //     /results?result_id=<quiz_results.id>
   // This line reads that ID from the URL (or null if not there).
   const [searchParams] = useSearchParams();
   const resultIdFromUrl = searchParams.get("result_id");
+
+   // ✅ Redirect rule:
+  // If there is NO result_id AND user is NOT logged in,
+  // send them to /login.
+  useEffect(() => {
+    if (!resultIdFromUrl && !user) {
+      nav("/login");
+    }
+  }, [resultIdFromUrl, user, nav]);
 
   // ---------- LocalStorage-based attempt (existing behaviour) ----------
   // 🔸 This is used when resultIdFromUrl is NOT present
@@ -42,6 +55,7 @@ export default function Results() {
     let cancelled = false;
     setLoadingRemote(true);
     setRemoteError(null);
+
 
     (async () => {
       const { data, error } = await supabase
