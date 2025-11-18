@@ -19,6 +19,7 @@ export default function Results() {
   // This line reads that ID from the URL (or null if not there).
   const [searchParams] = useSearchParams();
   const resultIdFromUrl = searchParams.get("result_id");
+  const isSharedView = searchParams.get("shared") === "1";
 
    // ✅ Redirect rule:
   // If there is NO result_id AND user is NOT logged in,
@@ -429,6 +430,7 @@ if (!emailSentRef.current && user?.email) {
         </div>
 
         {/* Actions */}
+        {!isSharedView && (
         <div className="mt-8 flex items-center justify-between gap-3">
           <button
             className="
@@ -464,6 +466,7 @@ if (!emailSentRef.current && user?.email) {
             Back to Home
           </button>
         </div>
+        )}
       </section>
     </div>
   );
