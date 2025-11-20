@@ -43,12 +43,12 @@ export default function Home() {
 
         {/* Title */}
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">
-          DAIKAI ENGINE BASIC KNOWLEDGE TEST
+          BASIC ENGINE KNOWLEDGE TEST
         </h1>
 
         {/* Subtitle (make secondary text readable in dark) */}
         <p className="text-paynes dark:text-glaucous mb-8">
-          Test your understanding of Daikai engine fundamentals in this 30-minute quiz.
+          Test your understanding of engine fundamentals in this 30-minute quiz.
         </p>
 
         {/* CTA — use glaucous in dark so it stands out from the charcoal card */}
