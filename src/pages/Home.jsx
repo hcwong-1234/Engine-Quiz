@@ -43,7 +43,7 @@ export default function Home() {
 
         {/* Title */}
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">
-          BASIC ENGINE KNOWLEDGE TEST
+          ENGINE BASIC KNOWLEDGE TEST
         </h1>
 
         {/* Subtitle (make secondary text readable in dark) */}
